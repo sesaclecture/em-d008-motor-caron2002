@@ -10,6 +10,8 @@
 #
 # 선형 비례 관계로 계산하세요.
 def servo_angle_to_pulse_width(angle):
+    angle = max(0, min(180, angle))
+    return int(500 + angle * (2000 / 180))
     raise NotImplementedError
 
 
@@ -19,6 +21,36 @@ def servo_angle_to_pulse_width(angle):
 #
 # C4, D4, E4, F4, G4, A4, B4, C5 음계를 지원해야 합니다.
 def note_to_frequency(note):
+    notes = [
+        ("Do", 523),  # C4
+        ("Re", 587),  # D4
+        ("Mi", 659),  # E4
+        ("Fa", 698),  # F4
+        ("Sol", 784),  # G4
+        ("La", 880),  # A4
+        ("Si", 988),  # B4
+        ("Do", 1047),  # C5
+    ]
+
+    match note:
+        case "C4":
+            return 262
+        case "D4":
+            return 294
+        case "E4":
+            return 330
+        case "F4":
+            return 349
+        case "G4":
+            return 392
+        case "A4":
+            return 440
+        case "B4":
+            return 494
+        case "C5":
+            return 523
+        case _:
+            return 0
     raise NotImplementedError
 
 
@@ -29,6 +61,17 @@ def note_to_frequency(note):
 # notes 인자는 음계 이름이 들어있는 리스트입니다.
 # 각 음계를 주파수 값으로 변환한 리스트를 반환하세요.
 def melody_to_frequencies(notes):
+    note = {
+        "C4": 262,
+        "D4": 294,
+        "E4": 330,
+        "F4": 349,
+        "G4": 392,
+        "A4": 440,
+        "B4": 494,
+        "C5": 523,
+    }
+    return [note[i] for i in notes]
     raise NotImplementedError
 
 
@@ -48,6 +91,20 @@ def melody_to_frequencies(notes):
 #
 # 반환값은 (linear_x, angular_z) 튜플입니다.
 def direction_to_twist(direction):
+    match direction:
+        case "forward":
+            return (1.0, 0.0)
+        case "backward":
+            return (-1.0, 0.0)
+        case "left":
+            return (0.0, 1.0)
+        case "right":
+            return (0.0, -1.0)
+        case "stop":
+            return (0.0, 0.0)
+        case _:
+            return (0.0, 0.0)
+
     raise NotImplementedError
 
 
@@ -62,4 +119,12 @@ def direction_to_twist(direction):
 #
 # 반환값은 (left_speed, right_speed) 튜플입니다.
 def twist_to_wheel_speed(linear_x, angular_z):
+    left_speed = (linear_x - angular_z) * 100
+    right_speed = (linear_x + angular_z) * 100
+
+    left_speed = max(-100, min(100, left_speed))
+    right_speed = max(-100, min(100, right_speed))
+
+    return (left_speed, right_speed)
+
     raise NotImplementedError
